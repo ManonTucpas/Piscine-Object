@@ -6,20 +6,22 @@ Bank::Bank(double initialFunds) { _bankFunds = initialFunds; }
 Bank::~Bank(void) {}
 
 // Account management
-const Account* Bank::createAccount(const std::string& name)
+bool Bank::createAccount(Account& account, const std::string& name)
 {
-    int newId = ++_accountId;
     if (name.empty() || name.length() >= 100)
     {
         std::cout << "Error: Creating account - Name is invalid" << std::endl;
-        return 0;
+        return false;
     }
-    Account newAccount(newId, name);
-    _accounts.push_back(newAccount);
+    // Account newAccount(newId, name);
+    int newId = ++_accountId;
+    account.initialize(newId, name);
+    _accounts.push_back(&account);
     _balances[newId] =0.0;
-    return &_accounts.back();
 
+    return newId;
 }
+
 void Bank::deleteAccount(int accountId)
 {
     if(!accountExists(accountId))
@@ -27,9 +29,9 @@ void Bank::deleteAccount(int accountId)
         std::cout << "Error: Account " << accountId << " does not exist" << std::endl;
         return;
     }
-    for (std::list<Account>::iterator it = _accounts.begin(); it != _accounts.end(); it++)
+    for (std::vector<Account*>::iterator it = _accounts.begin(); it != _accounts.end(); it++)
     {
-        if (it->getId() == accountId)
+        if ((*it)->getId() == accountId)
         {
             _accounts.erase(it);
             break;
@@ -96,18 +98,16 @@ bool Bank::modifyAccount(int accountId, const std::string& newName) {
         std::cout << "Error: New name cannot be empty" << std::endl;
         return false;
     }
-    
     // Find the account in our internal list
-    for (std::list<Account>::iterator it = _accounts.begin(); it != _accounts.end(); it++) {
-        if (it->getId() == accountId) {
-            std::string oldName = it->getName();
-            it->setName(newName);  // <-- This will now work!
+    for (std::vector<Account*>::iterator it = _accounts.begin(); it != _accounts.end(); it++) {
+        if ((*it)->getId() == accountId) {
+            std::string oldName = (*it)->getName();
+            (*it)->setName(newName);  // <-- This will now work!
             std::cout << "✓ Account " << accountId << " name changed from '" 
                       << oldName << "' to '" << newName << "'" << std::endl;
             return true;
         }
     }
-    
     std::cout << "Error: Account with ID " << accountId << " not found" << std::endl;
     return false;
 }

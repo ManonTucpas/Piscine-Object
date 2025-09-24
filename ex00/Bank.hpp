@@ -4,7 +4,6 @@
 #include <iostream>
 #include <string>
 #include <map>
-#include <list>
 #include "Account.hpp"
 
 class Bank
@@ -12,7 +11,7 @@ class Bank
 
     private:
         static int _accountId; // Static variable shared accross all Bank Instances
-        std::list<Account> _accounts;
+        std::vector<Account*> _accounts;
         std::map<int, double> _balances; // key: accountId - value: balance
         double _bankFunds;
         
@@ -23,7 +22,7 @@ class Bank
         ~Bank(void);
 
          // Account management
-        const Account *createAccount(const std::string &name); // Read-only access with const
+        bool createAccount(Account& account, const std::string &name); // Read-only access with const
         void deleteAccount(int accountId);
         // Money operations
         void deposit(int accountId, double amount);
