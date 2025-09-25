@@ -6,7 +6,7 @@ Bank::Bank(double initialFunds) { _bankFunds = initialFunds; }
 Bank::~Bank(void) {}
 
 // Account management
-bool Bank::createAccount(Account& account, const std::string& name)
+bool Bank::createAccount(Account &account, const std::string &name)
 {
     if (name.empty() || name.length() >= 100)
     {
@@ -17,19 +17,19 @@ bool Bank::createAccount(Account& account, const std::string& name)
     int newId = ++_accountId;
     account.initialize(newId, name);
     _accounts.push_back(&account);
-    _balances[newId] =0.0;
+    _balances[newId] = 0.0;
 
     return newId;
 }
 
 void Bank::deleteAccount(int accountId)
 {
-    if(!accountExists(accountId))
+    if (!accountExists(accountId))
     {
         std::cout << "Error: Account " << accountId << " does not exist" << std::endl;
         return;
     }
-    for (std::vector<Account*>::iterator it = _accounts.begin(); it != _accounts.end(); it++)
+    for (std::vector<Account *>::iterator it = _accounts.begin(); it != _accounts.end(); it++)
     {
         if ((*it)->getId() == accountId)
         {
@@ -44,8 +44,13 @@ void Bank::deleteAccount(int accountId)
 // Money operations
 void Bank::deposit(int accountId, double amount)
 {
-    if (amount <= 0) return;
-    if(!accountExists(accountId))
+    if (amount <= 0)
+    {
+        std::cout << "Error: invalid amount" << std::endl;
+        return;
+    }
+    
+    if (!accountExists(accountId))
     {
         std::cout << "Error: Account " << accountId << " does not exist" << std::endl;
         return;
@@ -59,8 +64,12 @@ void Bank::deposit(int accountId, double amount)
 
 void Bank::withdraw(int accountId, double amount)
 {
-    if (amount <= 0) return;
-    if(!accountExists(accountId))
+    if (amount <= 0)
+    {
+        std::cout << "Error: invalid amount" << std::endl;
+        return;
+    }
+    if (!accountExists(accountId))
     {
         std::cout << "Error: Account " << accountId << " does not exist" << std::endl;
         return;
@@ -76,13 +85,14 @@ void Bank::withdraw(int accountId, double amount)
 
 void Bank::giveLoan(int accountId, double amount)
 {
-    if (amount <= 0) return;
-    if(!accountExists(accountId))
+    if (amount <= 0)
+        return;
+    if (!accountExists(accountId))
     {
         std::cout << "Error: Account " << accountId << " does not exist" << std::endl;
         return;
     }
-    
+
     if (_bankFunds < amount)
     {
         std::cout << "Bank Insufficient funds for loan" << std::endl;
@@ -93,17 +103,21 @@ void Bank::giveLoan(int accountId, double amount)
     return;
 }
 
-bool Bank::modifyAccount(int accountId, const std::string& newName) {
-    if (newName.empty()) {
+bool Bank::modifyAccount(int accountId, const std::string &newName)
+{
+    if (newName.empty())
+    {
         std::cout << "Error: New name cannot be empty" << std::endl;
         return false;
     }
     // Find the account in our internal list
-    for (std::vector<Account*>::iterator it = _accounts.begin(); it != _accounts.end(); it++) {
-        if ((*it)->getId() == accountId) {
+    for (std::vector<Account *>::iterator it = _accounts.begin(); it != _accounts.end(); it++)
+    {
+        if ((*it)->getId() == accountId)
+        {
             std::string oldName = (*it)->getName();
-            (*it)->setName(newName);  // <-- This will now work!
-            std::cout << "✓ Account " << accountId << " name changed from '" 
+            (*it)->setName(newName); // <-- This will now work!
+            std::cout << "✓ Account " << accountId << " name changed from '"
                       << oldName << "' to '" << newName << "'" << std::endl;
             return true;
         }
@@ -114,7 +128,7 @@ bool Bank::modifyAccount(int accountId, const std::string& newName) {
 
 double Bank::getBalance(int accountId) const
 {
-    if(!accountExists(accountId))
+    if (!accountExists(accountId))
     {
         std::cout << "Error: Account " << accountId << " does not exist" << std::endl;
         return 0;
@@ -122,13 +136,13 @@ double Bank::getBalance(int accountId) const
     return _balances.at(accountId);
 }
 
-//Bank Operations
+// Bank Operations
 double Bank::getBankFunds() const
 {
     return _bankFunds;
 }
 
-bool Bank::accountExists(int accountId) const 
+bool Bank::accountExists(int accountId) const
 {
-    return _balances.find(accountId) != _balances.end(); 
+    return _balances.find(accountId) != _balances.end();
 }
